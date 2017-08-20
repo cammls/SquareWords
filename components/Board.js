@@ -1,9 +1,14 @@
 import React from 'react'
+import _ from 'lodash'
+import Modal from 'react-native-modal'
 import { StyleSheet, Text, View } from 'react-native'
 import { width } from '../helper'
 import Tile from './Tile'
+import { words } from '../words'
 
 const side = width / 3
+const timeout = (time) => new Promise((resolve) => setTimeout(resolve, time))
+
 
 
 export default class Board extends React.Component {
@@ -11,9 +16,13 @@ export default class Board extends React.Component {
      super()
      this.state = {
        letters: Array(9).fill(null),
+       isGameWon: false
      }
 
-     this.state.letters= "keyboard".split('')
+     this.state.word = _.sample(words).split('')
+     this.state.letters = _.shuffle(this.state.word)
+     // decomment to style the modal
+    //  this.state.letters = this.state.word
    }
    updateBoard(pos, direction) {
     const letters = this.state.letters.slice()
@@ -37,28 +46,42 @@ export default class Board extends React.Component {
     if (!letters[newpos] && newpos >= 0 && newpos < 9) {
       letters[newpos] = letter
        this.setState({letters: letters})
+       if (letters.toString().slice(0, -1) == this.state.word.toString()) {
+         this.setState({ isGameWon: true})
+         timeout(4000).then(()=> {
+           this.setState({ isGameWon: false})
+           this.resetGame()
+         })
+       }
     }
+   }
+   resetGame() {
+     this.setState({
+       isGameWon: false,
+       word: _.sample(words).split('')
+     })
+     this.setState({letters: _.shuffle(this.state.word)})
    }
    renderTile(i) {
      return(<Tile
+       isCorrect= {this.state.letters[i] == this.state.word[i] && i != 8}
        letter={this.state.letters[i]}
        onMove={(dir) => {this.updateBoard(i,dir)} }>
        </Tile>)
      }
      render() {
-    return (
-      <View style={styles.container}>
-        <View style={styles.cell}>{this.renderTile(0)}</View>
-        <View style={styles.cell}>{this.renderTile(1)}</View>
-        <View style={styles.cell}>{this.renderTile(2)}</View>
-        <View style={styles.cell}>{this.renderTile(3)}</View>
-        <View style={styles.cell}>{this.renderTile(4)}</View>
-        <View style={styles.cell}>{this.renderTile(5)}</View>
-        <View style={styles.cell}>{this.renderTile(6)}</View>
-        <View style={styles.cell}>{this.renderTile(7)}</View>
-        <View style={styles.cell}>{this.renderTile(8)}</View>
-      </View>
-    )
+       return (
+         <View style={styles.container}>
+         <Modal isVisible={this.state.isGameWon}>
+         <View style={styles.modal}>
+         <Text>You won!</Text>
+         </View>
+         </Modal>
+         {this.state.letters.map((letter, index) => {
+           return <View key={index} style={styles.cell}>{this.renderTile(index)}</View>
+         })}
+         </View>
+       )
   }
 }
 
@@ -68,15 +91,19 @@ const styles = StyleSheet.create({
     width: width,
     backgroundColor: '#3696b4',
     flexDirection: 'row',
-  //  alignItems: 'flex-start',
     alignContent: 'space-between',
-  //  justifyContent: 'space-around',
     flexWrap: 'wrap'
   },
   cell: {
     height: side,
     width: side,
     backgroundColor: '#1915e9',
+    alignItems: 'center'
+  },
+  modal: {
+    backgroundColor:'#ffffff',
+    height: width,
+    width: width,
     alignItems: 'center'
   }
 });

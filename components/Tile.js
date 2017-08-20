@@ -12,6 +12,10 @@ export default class Tile extends React.Component {
     }
   }
   render() {
+    let ok = <Text></Text>
+    if (this.props.isCorrect) {
+      ok = <Text>OK</Text>
+    }
     return (
       <GestureRecognizer
       onSwipeUp={() => this.move('up')}
@@ -20,6 +24,7 @@ export default class Tile extends React.Component {
       onSwipeRight={() => this.move('right')}>
     <View style={this.props.letter ? styles.container: styles.none}>
     <Text>{this.props.letter}</Text>
+    {ok}
     </View>
     </GestureRecognizer>
   )
