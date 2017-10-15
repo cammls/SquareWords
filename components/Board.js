@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
   container: {
     height: width,
     width: width,
-    backgroundColor: '#3696b4',
+    backgroundColor: '#F5F5F5',
     flexDirection: 'row',
     alignContent: 'space-between',
     flexWrap: 'wrap'
@@ -97,11 +97,11 @@ const styles = StyleSheet.create({
   cell: {
     height: side,
     width: side,
-    backgroundColor: '#1915e9',
+    backgroundColor: '#F5F5F5',
     alignItems: 'center'
   },
   modal: {
-    backgroundColor:'#ffffff',
+    backgroundColor:'#F5F5F5',
     height: width,
     width: width,
     alignItems: 'center'
